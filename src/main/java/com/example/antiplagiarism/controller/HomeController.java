@@ -1,7 +1,7 @@
 package com.example.antiplagiarism.controller;
 
 import com.example.antiplagiarism.service.model.TextTestSubmitDto;
-import com.example.antiplagiarism.util.AntiplagiarismThymeleafUtil;
+import com.example.antiplagiarism.util.AntiplagiarismUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -14,6 +14,8 @@ import org.springframework.web.servlet.ModelAndView;
 
 import javax.validation.Valid;
 
+import static com.example.antiplagiarism.util.AntiplagiarismUtil.TEXT_TEST_ATTRIBUTE_KEY;
+
 @Slf4j
 @Controller
 @RequiredArgsConstructor
@@ -23,14 +25,13 @@ public class HomeController {
 
     @GetMapping(value = "/" + HOME_PAGE_NAME)
     public ModelAndView getHomePage(Model model) {
-        model.addAttribute("textTest", new TextTestSubmitDto());
-        return AntiplagiarismThymeleafUtil.buildMav(HOME_PAGE_NAME, model);
+        model.addAttribute(TEXT_TEST_ATTRIBUTE_KEY, new TextTestSubmitDto());
+        return AntiplagiarismUtil.buildMav(HOME_PAGE_NAME, model);
     }
 
     @PostMapping(value = "/" + HOME_PAGE_NAME)
-    public ModelAndView doTextTest(@ModelAttribute("textTest") @Valid TextTestSubmitDto textTestSubmitDto, Model model,
-                                   Errors errors) {
-        return AntiplagiarismThymeleafUtil.buildMav(HOME_PAGE_NAME, model);
+    public ModelAndView doTextTest(@ModelAttribute(TEXT_TEST_ATTRIBUTE_KEY) @Valid TextTestSubmitDto textTestSubmitDto, Model model) {
+        return AntiplagiarismUtil.buildMav(HOME_PAGE_NAME, model);
     }
 
 }

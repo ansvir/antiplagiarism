@@ -6,10 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import com.example.antiplagiarism.service.database.ProfileService;
-import com.example.antiplagiarism.util.AntiplagiarismThymeleafUtil;
-
-import java.util.stream.Collectors;
+import com.example.antiplagiarism.util.AntiplagiarismUtil;
 
 @Slf4j
 @Controller
@@ -20,7 +17,7 @@ public class ProfileController {
 
     @GetMapping(value = "/" + PROFILE_PAGE_NAME)
     public ModelAndView getProfilePage(Model model) {
-        return AntiplagiarismThymeleafUtil.buildMav(PROFILE_PAGE_NAME, model);
+        return AntiplagiarismUtil.buildMav(PROFILE_PAGE_NAME, model);
     }
 
 }

@@ -13,10 +13,10 @@ import javax.validation.constraints.NotNull;
 public class TextTestSubmitDto {
 
     @NotNull
-    @NotEmpty
+    @NotEmpty(message = "Entered text must not be empty!")
     private String textOne;
     @NotNull
-    @NotEmpty
+    @NotEmpty(message = "Entered text must not be empty!")
     private String textTwo;
 
 }

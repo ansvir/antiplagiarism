@@ -28,7 +28,7 @@
   <link href="/css/style.css" data-th-href="@{/css/style.css}" rel="stylesheet">
 </head>
 <body>
-<form name="f" th:action="@{/login}" th:object="${user}" method="POST">
+<form th:action="@{/login}" th:object="${user}" method="POST">
   <section class="vh-100 gradient-primary">
     <div class="container py-5 h-100">
       <div class="row d-flex justify-content-center align-items-center h-100">
@@ -42,26 +42,24 @@
                      style="width: 25%; height: 25%">
                 <h2 class="text-white my-3">Welcome!</h2>
 
-                <div class="form-floating">
-                  <input th:field="*{username}" type="text" name="username" class="form-control" id="username">
-                  <label class="text-dark" for="username">Username</label>
-                  <p th:each="error : ${#fields.errors('username')}" th:text="${error}">Incorrect username!</p>
+                <div class="row my-3">
+                  <div class="form-floating">
+                    <input th:field="*{username}" type="text" name="username" class="form-control" id="username">
+                    <label class="text-dark" for="username">Username</label>
+                    <p th:each="error : ${#fields.errors('username')}" th:text="${error}">Incorrect username!</p>
+                  </div>
+                  <div class="form-floating">
+                    <input th:field="*{password}" type="password" name="password" class="form-control" id="password">
+                    <label class="text-dark" for="password">Password</label>
+                    <p th:each="error : ${#fields.errors('password')}" th:text="${error}">Incorrect password!</p>
+                  </div>
                 </div>
-                <div class="form-floating">
-                  <input th:field="*{password}" type="password" name="password" class="form-control" id="password">
-                  <label class="text-dark" for="password">Password</label>
-                  <p th:each="error : ${#fields.errors('password')}" th:text="${error}">Incorrect password!</p>
+                <div class="row my-3">
+                  <a class="link-primary" href="signup">Not a user yet? Sign Up!</a>
                 </div>
-
-                <a class="my-3 link-primary" href="signup">Not a user yet? Sign Up!</a>
-
-                <div class="checkbox my-3">
-                  <label>
-                    <input type="checkbox" name="remember-me">Remember me
-                  </label>
+                <div class="row my-3">
+                  <button id="submit" class="btn btn-outline-light btn-lg px-5" type="submit">Sign In</button>
                 </div>
-
-                <button id="submit" class="btn btn-outline-light btn-lg px-5" type="submit">Sign In</button>
               </div>
             </div>
           </div>

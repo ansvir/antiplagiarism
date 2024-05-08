@@ -1,7 +1,11 @@
 package com.example.antiplagiarism.config;
 
+import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -18,7 +22,10 @@ import javax.sql.DataSource;
 
 @Configuration
 @EnableWebSecurity
+@RequiredArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+
+    private final UserDetailsServiceImpl userDetailsService;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -29,29 +36,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                     .authenticated()
                 .and()
                     .formLogin()
-                    .loginPage("/")
+                    .loginPage("/login")
                     .loginProcessingUrl("/login")
                     .defaultSuccessUrl("/home", true)
                     .permitAll()
                 .and()
-                    .rememberMe()
-                    .tokenValiditySeconds(60 * 60) // 1 hour
-                .and()
                     .logout()
-                    .logoutSuccessUrl("/")
+                    .logoutSuccessUrl("/login")
                     .permitAll();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService(DataSource dataSource) {
-        JdbcUserDetailsManager manager = new JdbcUserDetailsManager(dataSource);
-        manager.setUsersByUsernameQuery("SELECT * FROM app_user WHERE username LIKE ?");
-        manager.setAuthoritiesByUsernameQuery("SELECT * FROM authorities WHERE username LIKE ?");
-        manager.setGroupAuthoritiesSql("SELECT * FROM group_authorities WHERE group_id = ?");
-        manager.setGroupAuthoritiesByUsernameQuery("SELECT * FROM group_authorities ga" +
-                "INNER JOIN authorities a ON ga.authority = a.authority " +
-                "WHERE a.username LIKE ?");
-        return manager;
     }
 
     @Override
@@ -61,9 +53,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .antMatchers("/resources/**", "/css/**", "/img/**", "/lib/**", "/scss/**");
     }
 
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+
+    @Override
+    @SneakyThrows
+    protected void configure(AuthenticationManagerBuilder auth) {
+        auth.userDetailsService(userDetailsService);
     }
 
 }

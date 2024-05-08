@@ -49,12 +49,15 @@ public class UserService implements IService<UserDto, Long> {
         return userRepository.count();
     }
 
-    public boolean checkUserExists(UserAuthDto userAuthDto) {
+    public UserDto checkUserExists(UserAuthDto userAuthDto) {
         try {
             UserDto foundUser = findByUsername(userAuthDto.getUsername());
-            return passwordEncoder.matches(foundUser.getPassword(), userAuthDto.getPassword());
+            if (passwordEncoder.matches(foundUser.getPassword(), userAuthDto.getPassword())) {
+                return null;
+            }
+            return foundUser;
         } catch (EntityNotFoundException e) {
-            return false;
+            return null;
         }
     }
 

@@ -14,12 +14,12 @@ import javax.validation.constraints.NotNull;
 public class UserAuthDto {
 
     @NotNull
-    @NotEmpty
-    @Length(min = 2, max = 255)
+    @NotEmpty(message = "Username must not be empty!")
+    @Length(min = 2, max = 255, message = "Username must be 2 to 255 characters long!")
     private String username;
     @NotNull
-    @NotEmpty
-    @Length(min = 2, max = 255)
+    @NotEmpty(message = "Password must not be empty!")
+    @Length(min = 2, max = 255, message = "Password must be 2 to 255 characters long!")
     private String password;
 
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
-import com.example.antiplagiarism.util.AntiplagiarismThymeleafUtil;
+import com.example.antiplagiarism.util.AntiplagiarismUtil;
 
 @Slf4j
 @ControllerAdvice
@@ -20,7 +20,7 @@ public class ErrorController {
         String errorMessage = (throwable != null ? throwable.getMessage() : "Unknown error");
         model.addAttribute("errorMessage", errorMessage);
         model.addAttribute("statusCode", 500);
-        return AntiplagiarismThymeleafUtil.buildMav("error", model);
+        return AntiplagiarismUtil.buildMav("error", model);
     }
 
 }
