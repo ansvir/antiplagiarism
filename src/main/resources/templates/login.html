@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <title>Antiplagiarism - Login</title>
+  <meta charset="UTF-8">
+  <meta content="width=device-width, initial-scale=1.0" name="viewport">
+  <meta content="" name="keywords">
+  <meta content="" name="description">
+
+  <!-- Google Web Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600&family=Inter:wght@700;800&display=swap"
+        rel="stylesheet">
+
+  <!-- Icon Font Stylesheet -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- Libraries Stylesheet -->
+  <link href="/lib/animate/animate.min.css" data-th-href="@{/lib/animate/animate.min.css}" rel="stylesheet">
+  <link href="/lib/owlcarousel/assets/owl.carousel.min.css" data-th-href="@{/lib/owlcarousel/assets/owl.carousel.min.css}" rel="stylesheet">
+
+  <!-- Customized Bootstrap Stylesheet -->
+  <link href="/css/bootstrap.min.css" data-th-href="@{/css/bootstrap.min.css}" rel="stylesheet">
+
+  <!-- Template Stylesheet -->
+  <link href="/css/style.css" data-th-href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+<form name="f" th:action="@{/login}" th:object="${user}" method="POST">
+  <section class="vh-100 gradient-primary">
+    <div class="container py-5 h-100">
+      <div class="row d-flex justify-content-center align-items-center h-100">
+        <div class="col-12 col-md-8 col-lg-6 col-xl-5">
+          <div class="card bg-dark text-white" style="border-radius: 1rem;">
+            <div class="card-body p-5 text-center">
+
+              <div class="mb-md-5 mt-md-4 pb-5">
+
+                <img class="img-fluid" th:src="@{/img/logo.svg}" alt="App Logo"
+                     style="width: 25%; height: 25%">
+                <h2 class="text-white my-3">Welcome!</h2>
+
+                <div class="form-floating">
+                  <input th:field="*{username}" type="text" name="username" class="form-control" id="username">
+                  <label for="username">Username</label>
+                  <p th:each="error : ${#fields.errors('username')}" th:text="${error}">Incorrect username!</p>
+                </div>
+                <div class="form-floating">
+                  <input th:field="*{password}" type="password" name="password" class="form-control" id="password">
+                  <label for="password">Password</label>
+                  <p th:each="error : ${#fields.errors('password')}" th:text="${error}">Incorrect password!</p>
+                </div>
+
+                <a class="link-primary" href="login">Not a user yet? Sign Up!</a>
+
+                <div class="checkbox mb-3">
+                  <label>
+                    <input type="checkbox" name="remember-me">Remember me
+                  </label>
+                </div>
+
+                <button id="submit" class="btn btn-outline-light btn-lg px-5" type="submit">Sign In</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</form>
+<script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script th:src="@{/public/lib/wow/wow.min.js}"></script>
+<script th:src="@{/public/lib/easing/easing.min.js}"></script>
+<script th:src="@{/public/lib/waypoints/waypoints.min.js}"></script>
+<script th:src="@{/public/lib/owlcarousel/owl.carousel.min.js}"></script>
+<script th:src="@{/public/lib/custom.js}"></script>
+</body>
+</html>
