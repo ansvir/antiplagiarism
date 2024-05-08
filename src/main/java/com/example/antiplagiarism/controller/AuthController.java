@@ -1,6 +1,7 @@
 package com.example.antiplagiarism.controller;
 
 import com.example.antiplagiarism.service.database.UserService;
+import com.example.antiplagiarism.service.model.TextTestSubmitDto;
 import com.example.antiplagiarism.service.model.UserAuthDto;
 import com.example.antiplagiarism.service.model.UserDto;
 import com.example.antiplagiarism.util.AntiplagiarismThymeleafUtil;
@@ -12,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,8 +47,9 @@ public class AuthController {
     }
 
     @PostMapping(value = "/" + LOGIN_PAGE_NAME)
-    public ModelAndView doLogin(@ModelAttribute("user") @Valid UserAuthDto userAuthDto, Model model) {
+    public ModelAndView doLogin(@ModelAttribute("user") @Valid UserAuthDto userAuthDto, Model model, Errors errors) {
         if (userService.checkUserExists(userAuthDto)) {
+            model.addAttribute("textTest", new TextTestSubmitDto());
             return AntiplagiarismThymeleafUtil.buildMav(HOME_PAGE_NAME, model);
         }
         model.addAttribute(ALERT_ATTRIBUTE_KEY, List.of("No such user! Check your credentials!"));
@@ -54,7 +57,7 @@ public class AuthController {
     }
 
     @PostMapping(value = "/" + SIGNUP_PAGE_NAME)
-    public ModelAndView doSignUp(@ModelAttribute("user") @Valid UserAuthDto userAuthDto, Model model) {
+    public ModelAndView doSignUp(@ModelAttribute("user") @Valid UserAuthDto userAuthDto, Model model, Errors errors) {
         if (userService.checkUserExists(userAuthDto)) {
             model.addAttribute(ALERT_ATTRIBUTE_KEY, List.of("Such user already exist!"));
             return AntiplagiarismThymeleafUtil.buildMav(SIGNUP_PAGE_NAME, model);
@@ -63,6 +66,7 @@ public class AuthController {
                 List.of(new SimpleGrantedAuthority("USER"))));
         Authentication authentication = new UsernamePasswordAuthenticationToken(newUser, null, newUser.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authentication);
+        model.addAttribute("textTest", new TextTestSubmitDto());
         return AntiplagiarismThymeleafUtil.buildMav(HOME_PAGE_NAME, model);
     }
 

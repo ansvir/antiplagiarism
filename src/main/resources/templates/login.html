@@ -44,18 +44,18 @@
 
                 <div class="form-floating">
                   <input th:field="*{username}" type="text" name="username" class="form-control" id="username">
-                  <label for="username">Username</label>
+                  <label class="text-dark" for="username">Username</label>
                   <p th:each="error : ${#fields.errors('username')}" th:text="${error}">Incorrect username!</p>
                 </div>
                 <div class="form-floating">
                   <input th:field="*{password}" type="password" name="password" class="form-control" id="password">
-                  <label for="password">Password</label>
+                  <label class="text-dark" for="password">Password</label>
                   <p th:each="error : ${#fields.errors('password')}" th:text="${error}">Incorrect password!</p>
                 </div>
 
-                <a class="link-primary" href="login">Not a user yet? Sign Up!</a>
+                <a class="my-3 link-primary" href="signup">Not a user yet? Sign Up!</a>
 
-                <div class="checkbox mb-3">
+                <div class="checkbox my-3">
                   <label>
                     <input type="checkbox" name="remember-me">Remember me
                   </label>
@@ -75,10 +75,10 @@
 <script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 <script src="https://cdn.datatables.net/1.11.3/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script th:src="@{/public/lib/wow/wow.min.js}"></script>
-<script th:src="@{/public/lib/easing/easing.min.js}"></script>
-<script th:src="@{/public/lib/waypoints/waypoints.min.js}"></script>
-<script th:src="@{/public/lib/owlcarousel/owl.carousel.min.js}"></script>
-<script th:src="@{/public/lib/custom.js}"></script>
+<script th:src="@{/lib/wow/wow.min.js}"></script>
+<script th:src="@{/lib/easing/easing.min.js}"></script>
+<script th:src="@{/lib/waypoints/waypoints.min.js}"></script>
+<script th:src="@{/lib/owlcarousel/owl.carousel.min.js}"></script>
+<script th:src="@{/lib/custom.js}"></script>
 </body>
 </html>

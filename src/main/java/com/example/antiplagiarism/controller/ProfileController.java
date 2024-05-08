@@ -19,7 +19,7 @@ public class ProfileController {
     private static final String PROFILE_PAGE_NAME = "profile";
 
     @GetMapping(value = "/" + PROFILE_PAGE_NAME)
-    public ModelAndView getMainPage(Model model) {
+    public ModelAndView getProfilePage(Model model) {
         return AntiplagiarismThymeleafUtil.buildMav(PROFILE_PAGE_NAME, model);
     }
 
