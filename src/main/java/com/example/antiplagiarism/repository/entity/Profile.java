@@ -23,6 +23,7 @@ public class Profile {
     private User user;
 
     @OneToMany
+    @JoinColumn(name = "profile_id")
     private List<TextTest> textTests;
 
 }

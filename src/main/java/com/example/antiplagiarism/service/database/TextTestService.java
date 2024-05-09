@@ -1,16 +1,9 @@
 package com.example.antiplagiarism.service.database;
 
-import com.example.antiplagiarism.mapper.ProfileMapper;
 import com.example.antiplagiarism.mapper.TextTestMapper;
-import com.example.antiplagiarism.repository.db.ProfileRepository;
 import com.example.antiplagiarism.repository.db.TextTestRepository;
-import com.example.antiplagiarism.repository.db.UserRepository;
-import com.example.antiplagiarism.repository.entity.Profile;
-import com.example.antiplagiarism.repository.entity.TextTest;
 import com.example.antiplagiarism.service.IService;
-import com.example.antiplagiarism.service.model.ProfileDto;
 import com.example.antiplagiarism.service.model.TextTestDto;
-import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.springframework.stereotype.Service;
@@ -22,9 +15,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
-@Data
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -32,18 +23,15 @@ public class TextTestService implements IService<TextTestDto, Long> {
 
     private static final List<String> TRIADS = List.of("раз", "про", "кур", "кот",
             "сиг", "одн", "воз", "рак", "сис", "вре");
-    private static final String SENTENCE_SPLIT_PATTERN = "\\s*([^.!?]+(?:[.!?](?!['\"]?\\s|$)[^.!?]+)*)\\s*[.!?]?";
+    private static final String SENTENCE_SPLIT_PATTERN = "[.!?]\\s+";
 
     private final TextTestRepository textTestRepository;
-    private final ProfileRepository profileRepository;
     private final TextTestMapper textTestMapper;
 
     @Override
     public List<TextTestDto> findAll() {
-        return textTestRepository.findAll()
-                .stream()
-                .map(textTestMapper::toDto)
-                .collect(Collectors.toList());
+        // not yet implemented
+        throw new UnsupportedOperationException("Not implemented yet!");
     }
 
 
@@ -54,14 +42,8 @@ public class TextTestService implements IService<TextTestDto, Long> {
 
     @Override
     public void updateAll(List<TextTestDto> entities) {
-        List<TextTest> textTests = entities
-                .stream()
-                .map(textTest -> {
-                    ProfileDto profil
-                    textTestMapper.toEntity(textTest, );
-                })
-                .collect(Collectors.toList());
-        textTestRepository.saveAll(textTests);
+        // not implemented yed
+        throw new UnsupportedOperationException("Method not yet implemented!");
     }
 
     @Override
@@ -69,12 +51,7 @@ public class TextTestService implements IService<TextTestDto, Long> {
         return textTestRepository.count();
     }
 
-    public TextTestDto testTextAndSaveResult(TextTestDto textTestDto) {
-        final TextTestDto toSave = doTextTest(textTestDto);
-        return save(toSave);
-    }
-    
-    private TextTestDto doTextTest(TextTestDto textTestDto) {
+    public TextTestDto doTextTest(TextTestDto textTestDto) {
         final String[] sentencesOne = doSentenceSplit(textTestDto.getTextOne());
         final String[] sentencesTwo = doSentenceSplit(textTestDto.getTextTwo());
         doEqualizeSentences(sentencesOne, sentencesTwo);
@@ -104,10 +81,10 @@ public class TextTestService implements IService<TextTestDto, Long> {
         }
     }
 
-    private Integer[][] buildTriadsMatrix(String[] sentencesOne) {
-        Integer[][] matrix = new Integer[TRIADS.size()][sentencesOne.length];
+    private Integer[][] buildTriadsMatrix(String[] sentences) {
+        Integer[][] matrix = new Integer[TRIADS.size()][sentences.length];
         for (int i = 0; i < matrix.length; i++) {
-            matrix[i] = searchForEntries(TRIADS.get(i), sentencesOne);
+            matrix[i] = searchForEntries(TRIADS.get(i), sentences);
         }
         return matrix;
     }
@@ -116,7 +93,7 @@ public class TextTestService implements IService<TextTestDto, Long> {
         Integer[] entries = new Integer[sentences.length];
         for (int i = 0; i < sentences.length; i++) {
             String escapedWord = Pattern.quote(triada);
-            String pattern = "\\b" + escapedWord + "\\b";
+            String pattern = ".*" + escapedWord + ".*";
             Pattern wordPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
             Matcher matcher = wordPattern.matcher(sentences[i]);
             int count = 0;
@@ -137,11 +114,19 @@ public class TextTestService implements IService<TextTestDto, Long> {
             }
         }
         PearsonsCorrelation correlation = new PearsonsCorrelation(matrixDecimal);
-        return correlation.getCorrelationMatrix().getData();
+        double[][] data = correlation.getCorrelationMatrix().getData();
+        for (int i = 0; i < data.length; i++) {
+            for (int j = 0; j < data[0].length; j++) {
+                if (Double.isNaN(data[i][j])) {
+                    data[i][j] = 0.0;
+                }
+            }
+        }
+        return data;
     }
 
     private double calculateEquality(double[][] matrixOne, double[][] matrixTwo) {
-        // calculating Euclidean distance and applying maximum distance to ech
+        // calculating Euclidean distance and applying maximum distance to result
         double sumOfSquares = 0.0;
         double maxDistance = maxEuclideanDistance(matrixOne.length);
         for (int j = 0; j < matrixOne[0].length; j++) {
@@ -150,10 +135,10 @@ public class TextTestService implements IService<TextTestDto, Long> {
                 double difference = matrixOne[i][j] - matrixTwo[i][j];
                 columnDistance += Math.pow(difference, 2);
             }
-            sumOfSquares += columnDistance;
+            sumOfSquares += (maxDistance - Math.sqrt(columnDistance)) / maxDistance;
         }
 
-        return (maxDistance - Math.sqrt(sumOfSquares)) / maxDistance;
+        return sumOfSquares / matrixOne[0].length;
     }
 
     private double maxEuclideanDistance(int length) {

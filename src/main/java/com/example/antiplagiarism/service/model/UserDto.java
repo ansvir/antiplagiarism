@@ -1,21 +1,17 @@
 package com.example.antiplagiarism.service.model;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.User;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Collection;
-import java.util.List;
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class UserDto {
 
-@EqualsAndHashCode(callSuper = true)
-@Getter
-@Setter
-public class UserDto extends User {
-
-    public UserDto(String username, String password, Collection<? extends GrantedAuthority> authorities) {
-        super(username, password, authorities);
-    }
+    private String username;
+    private String password;
+    private String role;
+    private boolean isEnabled;
 
 }

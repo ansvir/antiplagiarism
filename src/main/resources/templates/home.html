@@ -1,6 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 
 <head>
     <meta charset="utf-8">
@@ -48,32 +47,50 @@
     <nav th:replace="fragments/desktop-navbar.html :: nav"></nav>
     <!-- Navbar End -->
 
-    <div sec:authorize="isAuthenticated()">
-        <!-- Search Start -->
-        <div class="container-fluid bg-primary mb-5 wow fadeIn" data-wow-delay="0.1s" style="padding: 35px;">
-            <div class="container">
-                <div class="row g-2">
-                    <form th:action="@{/home}" th:object="${textTest}" method="post">
-                        <div class="col-md-12">
-                            <div class="row g-2">
-                                <div class="mb-3">
-                                    <label for="textOne" class="form-label text-white">Enter your text</label>
-                                    <textarea th:field="*{textOne}" class="form-control text-white" name="textOne" id="textOne" rows="5"></textarea>
-                                    <p th:each="error : ${#fields.errors('textOne')}" th:text="${error}">This text is invalid!</p>
+    <!-- Search Start -->
+    <div class="container-fluid bg-primary mb-5 wow fadeIn" data-wow-delay="0.1s" style="padding: 35px;">
+        <div class="container">
+            <div class="row g-2">
+                <form th:action="@{/home}" th:object="${textTestSubmit}" method="post">
+                    <div class="col-md-12">
+                        <div class="row g-2">
+                            <div class="mb-3">
+                                <label for="textOne" class="form-label text-white">Enter your text</label>
+                                <textarea th:field="*{textOne}" class="form-control" name="textOne" id="textOne"
+                                          rows="5"></textarea>
+                                <p th:if="${#fields.hasErrors('textOne')}" th:errors="*{textOne}">This text is
+                                    invalid!</p>
+                            </div>
+                            <div class="mb-3">
+                                <label for="textTwo" class="form-label text-white">Enter text to check against</label>
+                                <textarea th:field="*{textTwo}" class="form-control" name="textTwo" id="textTwo"
+                                          rows="5"></textarea>
+                                <p th:if="${#fields.hasErrors('textTwo')}" th:errors="*{textTwo}">This text is
+                                    invalid!</p>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <button type="submit" class="btn btn-dark w-25 border-0 py-4">Submit</button>
                                 </div>
-                                <div class="mb-3">
-                                    <label for="textTwo" class="form-label text-white">Enter text to check against</label>
-                                    <textarea th:field="*{textTwo}" class="form-control" name="textTwo" id="textTwo" rows="5"></textarea>
-                                    <p th:each="error : ${#fields.errors('textTwo')}" th:text="${error}">This text is invalid!</p>
+                                <div th:if="${textTest != null && textTest.plagiatResult != null}" class="col-md-8">
+                                    <div class="text-white h3"
+                                         th:text="'Result: ' + ${#numbers.formatDecimal(textTest.plagiatResult, 2, 2)} + ' %'">
+                                    </div>
                                 </div>
-                                <button type="submit" class="btn btn-dark w-25 border-0 py-4">Submit</button>
+                            </div>
+                            <div th:if="${!#arrays.isEmpty(alertMessages)}">
+                                <div th:each="message : ${alertMessages}">
+                                    <div th:insert="fragments/alert :: alert ('danger', ${message})">
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
+
     <!-- Search End -->
     <!-- Footer Start -->
     <footer th:insert="fragments/footer.html"></footer>

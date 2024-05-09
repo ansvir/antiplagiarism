@@ -7,7 +7,6 @@ import com.example.antiplagiarism.service.model.UserAuthDto;
 import com.example.antiplagiarism.service.model.UserDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,7 +22,6 @@ public class UserService implements IService<UserDto, Long> {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
-    private final PasswordEncoder passwordEncoder;
 
     @Override
     public List<UserDto> findAll() {
@@ -52,7 +50,7 @@ public class UserService implements IService<UserDto, Long> {
     public UserDto checkUserExists(UserAuthDto userAuthDto) {
         try {
             UserDto foundUser = findByUsername(userAuthDto.getUsername());
-            if (passwordEncoder.matches(foundUser.getPassword(), userAuthDto.getPassword())) {
+            if (!foundUser.getPassword().equals(userAuthDto.getPassword())) {
                 return null;
             }
             return foundUser;
@@ -61,7 +59,7 @@ public class UserService implements IService<UserDto, Long> {
         }
     }
 
-    private UserDto findByUsername(String username) {
+    public UserDto findByUsername(String username) {
         return userMapper.toDto(userRepository.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("No such user: " + username)));
     }

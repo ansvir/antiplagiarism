@@ -17,17 +17,13 @@ public class TextTest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 12000)
     private String textOne;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 12000)
     private String textTwo;
 
     @Column(nullable = false)
     private BigDecimal plagiatResult;
-
-    @ManyToOne
-    @Column(nullable = false)
-    private Profile profileId;
 
 }
