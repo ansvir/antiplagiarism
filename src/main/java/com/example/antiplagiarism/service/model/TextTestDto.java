@@ -15,5 +15,6 @@ public class TextTestDto {
     private String textOne;
     private String textTwo;
     private BigDecimal plagiatResult;
+    private Long profileId;
 
 }

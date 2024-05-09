@@ -26,4 +26,8 @@ public class TextTest {
     @Column(nullable = false)
     private BigDecimal plagiatResult;
 
+    @ManyToOne
+    @Column(nullable = false)
+    private Profile profileId;
+
 }

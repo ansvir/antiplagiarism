@@ -15,6 +15,7 @@
     <description>Anti-plagiarism software</description>
     <properties>
         <java.version>11</java.version>
+        <commons.math.version>3.6.1</commons.math.version>
     </properties>
     <dependencies>
         <dependency>
@@ -42,6 +43,11 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math3</artifactId>
+            <version>${commons.math.version}</version>
         </dependency>
 
         <dependency>
