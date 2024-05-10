@@ -21,7 +21,7 @@ import java.util.regex.Pattern;
 @Transactional
 public class TextTestService implements IService<TextTestDto, Long> {
 
-    private static final List<String> TRIADS = List.of("раз", "про", "кур", "кот",
+    public static final List<String> TRIADS = List.of("раз", "про", "кур", "кот",
             "сиг", "одн", "воз", "рак", "сис", "вре");
     private static final String SENTENCE_SPLIT_PATTERN = "[.!?]\\s+";
 
@@ -64,12 +64,12 @@ public class TextTestService implements IService<TextTestDto, Long> {
         return textTestDto;
     }
 
-    private String[] doSentenceSplit(String text) {
+    public String[] doSentenceSplit(String text) {
         return text.toLowerCase(Locale.forLanguageTag("ru"))
                 .trim().split(SENTENCE_SPLIT_PATTERN);
     }
 
-    private void doEqualizeSentences(String[] sentencesOne, String[] sentencesTwo) {
+    public void doEqualizeSentences(String[] sentencesOne, String[] sentencesTwo) {
         if (sentencesOne.length < sentencesTwo.length) {
             int originalLength = sentencesOne.length;
             sentencesOne = Arrays.copyOf(sentencesOne, sentencesTwo.length);
@@ -81,7 +81,7 @@ public class TextTestService implements IService<TextTestDto, Long> {
         }
     }
 
-    private Integer[][] buildTriadsMatrix(String[] sentences) {
+    public Integer[][] buildTriadsMatrix(String[] sentences) {
         Integer[][] matrix = new Integer[TRIADS.size()][sentences.length];
         for (int i = 0; i < matrix.length; i++) {
             matrix[i] = searchForEntries(TRIADS.get(i), sentences);
@@ -105,7 +105,7 @@ public class TextTestService implements IService<TextTestDto, Long> {
         return entries;
     }
 
-    private double[][] buildCorrelationMatrix(Integer[][] matrix) {
+    public double[][] buildCorrelationMatrix(Integer[][] matrix) {
         double[][] matrixDecimal = new double[matrix.length][matrix[0].length];
 
         for (int i = 0; i < matrix.length; i++) {

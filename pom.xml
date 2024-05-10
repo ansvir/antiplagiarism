@@ -16,6 +16,8 @@
     <properties>
         <java.version>11</java.version>
         <commons.math.version>3.6.1</commons.math.version>
+        <apache.poi.version>5.2.5</apache.poi.version>
+        <log4j.version>2.17.2</log4j.version>
     </properties>
     <dependencies>
         <dependency>
@@ -43,6 +45,21 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-math3</artifactId>
             <version>${commons.math.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>${apache.poi.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-to-slf4j</artifactId>
+            <version>${log4j.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>${log4j.version}</version>
         </dependency>
 
         <dependency>

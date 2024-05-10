@@ -7,7 +7,6 @@ import com.example.antiplagiarism.service.model.UserAuthDto;
 import com.example.antiplagiarism.service.model.UserDto;
 import com.example.antiplagiarism.util.AntiplagiarismUtil;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,7 +22,6 @@ import java.util.List;
 
 import static com.example.antiplagiarism.util.AntiplagiarismUtil.*;
 
-@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class AuthController {

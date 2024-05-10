@@ -70,7 +70,7 @@ public class AuthService {
         log.debug("[SESSION] Running sessions clear...");
         SESSIONS.forEach(session -> {
             Date date = new Date();
-            if (date.before(new Date(session.loginTime + session.sessionExpirationTime))) {
+            if (date.after(new Date(session.loginTime + session.sessionExpirationTime))) {
                 sessionsToDelete.add(session);
             }
         });
