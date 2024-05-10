@@ -70,7 +70,7 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-4">
-                                    <button type="submit" class="btn btn-dark w-25 border-0 py-4">Submit</button>
+                                    <button type="submit" class="btn btn-dark w-25 border-0">Submit</button>
                                 </div>
                                 <div th:if="${textTest != null && textTest.plagiatResult != null}" class="col-md-4">
                                     <div class="text-white h3"
@@ -78,7 +78,7 @@
                                     </div>
                                 </div>
                                 <div th:if="${textTest != null && textTest.plagiatResult != null}" class="col-md-4">
-                                    <button type="button" onclick="sendReport()" class="btn btn-dark">Report</button>
+                                    <button type="button" onclick="sendReport()" class="btn btn-dark border-0">Report</button>
                                 </div>
                             </div>
                             <div th:if="${!#arrays.isEmpty(alertMessages)}">
