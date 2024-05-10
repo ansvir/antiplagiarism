@@ -11,16 +11,19 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "text_test")
 public class TextTest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false, length = 12000)
+    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String textOne;
 
-    @Column(nullable = false, length = 12000)
+    @Lob
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String textTwo;
 
     @Column(nullable = false)

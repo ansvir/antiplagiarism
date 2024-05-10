@@ -58,14 +58,14 @@
                                 <label for="textOne" class="form-label text-white">Enter your text</label>
                                 <textarea th:field="*{textOne}" class="form-control" name="textOne" id="textOne"
                                           rows="5"></textarea>
-                                <p th:if="${#fields.hasErrors('textOne')}" th:errors="*{textOne}">This text is
+                                <p class="text-danger" th:if="${#fields.hasErrors('textOne')}" th:errors="*{textOne}">This text is
                                     invalid!</p>
                             </div>
                             <div class="mb-3">
                                 <label for="textTwo" class="form-label text-white">Enter text to check against</label>
                                 <textarea th:field="*{textTwo}" class="form-control" name="textTwo" id="textTwo"
                                           rows="5"></textarea>
-                                <p th:if="${#fields.hasErrors('textTwo')}" th:errors="*{textTwo}">This text is
+                                <p class="text-danger" th:if="${#fields.hasErrors('textTwo')}" th:errors="*{textTwo}">This text is
                                     invalid!</p>
                             </div>
                             <div class="row">

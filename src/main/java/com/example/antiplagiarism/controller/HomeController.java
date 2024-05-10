@@ -63,12 +63,12 @@ public class HomeController {
             return AntiplagiarismUtil.buildMav(LOGIN_PAGE_NAME, model);
         }
         if (bindingResult.hasErrors()) {
-            AntiplagiarismUtil.buildMav(HOME_PAGE_NAME, model);
+            return AntiplagiarismUtil.buildMav(HOME_PAGE_NAME, model);
         }
         TextTestDto textTestDto = new TextTestDto();
         textTestDto.setTextOne(textTestSubmitDto.getTextOne());
         textTestDto.setTextTwo(textTestSubmitDto.getTextTwo());
-        model.addAttribute(TEXT_TEST_ATTRIBUTE_KEY, textTestService.doTextTest(textTestDto));
+        model.addAttribute(TEXT_TEST_ATTRIBUTE_KEY, textTestService.doTextTestAndSaveResult(textTestDto));
         model.addAttribute(TEXT_TEST_SUBMIT_ATTRIBUTE_KEY, textTestSubmitDto);
         return AntiplagiarismUtil.buildMav(HOME_PAGE_NAME, model);
     }

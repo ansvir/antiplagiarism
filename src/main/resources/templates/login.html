@@ -46,12 +46,12 @@
                   <div class="form-floating">
                     <input th:field="*{username}" type="text" name="username" class="form-control" id="username">
                     <label class="text-dark" for="username">Username</label>
-                    <p th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Incorrect username!</p>
+                    <p class="text-danger" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Incorrect username!</p>
                   </div>
                   <div class="form-floating">
                     <input th:field="*{password}" type="password" name="password" class="form-control" id="password">
                     <label class="text-dark" for="password">Password</label>
-                    <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect password!</p>
+                    <p class="text-danger" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Incorrect password!</p>
                   </div>
                 </div>
                 <div class="row my-3">

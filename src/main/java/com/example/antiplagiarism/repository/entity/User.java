@@ -21,8 +21,12 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
-    private Profile profile;
+    @Column(nullable = false)
+    private String role;
+
+    @OneToMany
+    @JoinColumn(name = "user_id")
+    private List<TextTest> textTests;
 
     @Column(nullable = false)
     private boolean enabled;

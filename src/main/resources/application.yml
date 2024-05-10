@@ -5,10 +5,9 @@ spring:
     data: classpath:sql/data.sql
     url: jdbc:mysql://localhost:3306/anti_plagiarism?allowPublicKeyRetrieval=true&useSSL=false
     driver-class-name: com.mysql.cj.jdbc.Driver
-    initialization-mode: always
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:

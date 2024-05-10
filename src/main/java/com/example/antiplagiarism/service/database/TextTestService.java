@@ -51,7 +51,12 @@ public class TextTestService implements IService<TextTestDto, Long> {
         return textTestRepository.count();
     }
 
-    public TextTestDto doTextTest(TextTestDto textTestDto) {
+    public TextTestDto doTextTestAndSaveResult(TextTestDto textTestDto) {
+        TextTestDto result = doTextTest(textTestDto);
+        return save(result);
+    }
+
+    private TextTestDto doTextTest(TextTestDto textTestDto) {
         final String[] sentencesOne = doSentenceSplit(textTestDto.getTextOne());
         final String[] sentencesTwo = doSentenceSplit(textTestDto.getTextTwo());
         doEqualizeSentences(sentencesOne, sentencesTwo);

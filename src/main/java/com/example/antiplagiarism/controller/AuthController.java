@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.example.antiplagiarism.util.AntiplagiarismUtil.*;
@@ -50,8 +51,7 @@ public class AuthController {
     public ModelAndView doLogin(@Valid @ModelAttribute(USER_ATTRIBUTE_KEY) UserAuthDto userAuthDto,
                                 BindingResult bindingResult, Model model, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute(USER_ATTRIBUTE_KEY, new UserAuthDto());
-            AntiplagiarismUtil.buildMav(LOGIN_PAGE_NAME, model);
+            return AntiplagiarismUtil.buildMav(LOGIN_PAGE_NAME, model);
         }
         UserDto userDto = userService.checkUserExists(userAuthDto);
         if (userDto != null) {
@@ -67,14 +67,15 @@ public class AuthController {
     public ModelAndView doSignUp(@Valid @ModelAttribute(USER_ATTRIBUTE_KEY) UserAuthDto userAuthDto,
                                  BindingResult bindingResult, Model model, HttpServletRequest request) {
         if (bindingResult.hasErrors()) {
-            AntiplagiarismUtil.buildMav(LOGIN_PAGE_NAME, model);
+            return AntiplagiarismUtil.buildMav(SIGNUP_PAGE_NAME, model);
         }
         UserDto userDto = userService.checkUserExists(userAuthDto);
         if (userDto != null) {
             model.addAttribute(ALERT_ATTRIBUTE_KEY, List.of("Such user already exist!"));
             return AntiplagiarismUtil.buildMav(SIGNUP_PAGE_NAME, model);
         }
-        UserDto newUser = userService.save(new UserDto(userAuthDto.getUsername(), userAuthDto.getPassword(), USER_ROLE, true));
+        UserDto newUser = userService.save(new UserDto(userAuthDto.getUsername(), userAuthDto.getPassword(),
+                USER_ROLE, new ArrayList<>(), true));
         authService.loginUser(newUser.getUsername(), request.getRequestedSessionId());
         model.addAttribute(TEXT_TEST_SUBMIT_ATTRIBUTE_KEY, new TextTestSubmitDto());
         return AntiplagiarismUtil.buildMav(HOME_PAGE_NAME, model);
