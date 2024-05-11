@@ -25,9 +25,13 @@ public class ExcelService {
 
     public byte[] createTextTestReport(TextTestSubmitDto textTestSubmitDto) {
         HSSFWorkbook workbook = new HSSFWorkbook();
-        final String[] sentencesOne = textTestService.doSentenceSplit(textTestSubmitDto.getTextOne());
-        final String[] sentencesTwo = textTestService.doSentenceSplit(textTestSubmitDto.getTextTwo());
-        textTestService.doEqualizeSentences(sentencesOne, sentencesTwo);
+        String[] sentencesOne = textTestService.doSentenceSplit(textTestSubmitDto.getTextOne());
+        String[] sentencesTwo = textTestService.doSentenceSplit(textTestSubmitDto.getTextTwo());
+        if (sentencesOne.length > sentencesTwo.length) {
+            sentencesTwo = textTestService.doEqualizeSentences(sentencesTwo, sentencesOne);
+        } else if (sentencesOne.length < sentencesTwo.length) {
+            sentencesOne = textTestService.doEqualizeSentences(sentencesOne, sentencesTwo);
+        }
         final Integer[][] matrixFirst = textTestService.buildTriadsMatrix(sentencesOne);
         final Integer[][] matrixSecond = textTestService.buildTriadsMatrix(sentencesTwo);
         String[] triads = TRIADS.toArray(String[]::new);

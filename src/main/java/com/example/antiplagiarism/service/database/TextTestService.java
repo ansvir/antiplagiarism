@@ -9,6 +9,7 @@ import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
@@ -57,9 +58,13 @@ public class TextTestService implements IService<TextTestDto, Long> {
     }
 
     private TextTestDto doTextTest(TextTestDto textTestDto) {
-        final String[] sentencesOne = doSentenceSplit(textTestDto.getTextOne());
-        final String[] sentencesTwo = doSentenceSplit(textTestDto.getTextTwo());
-        doEqualizeSentences(sentencesOne, sentencesTwo);
+        String[] sentencesOne = doSentenceSplit(textTestDto.getTextOne());
+        String[] sentencesTwo = doSentenceSplit(textTestDto.getTextTwo());
+        if (sentencesOne.length > sentencesTwo.length) {
+            sentencesTwo = doEqualizeSentences(sentencesTwo, sentencesOne);
+        } else if (sentencesOne.length < sentencesTwo.length) {
+            sentencesOne = doEqualizeSentences(sentencesOne, sentencesTwo);
+        }
         final Integer[][] matrixFirst = buildTriadsMatrix(sentencesOne);
         final Integer[][] matrixSecond = buildTriadsMatrix(sentencesTwo);
         final double[][] correlationMatrixFirst = buildCorrelationMatrix(matrixFirst);
@@ -74,20 +79,15 @@ public class TextTestService implements IService<TextTestDto, Long> {
                 .trim().split(SENTENCE_SPLIT_PATTERN);
     }
 
-    public void doEqualizeSentences(String[] sentencesOne, String[] sentencesTwo) {
-        if (sentencesOne.length < sentencesTwo.length) {
-            int originalLength = sentencesOne.length;
-            sentencesOne = Arrays.copyOf(sentencesOne, sentencesTwo.length);
-            Arrays.fill(sentencesOne, originalLength - 1, sentencesOne.length, "");
-        } else if (sentencesOne.length > sentencesTwo.length) {
-            int originalLength = sentencesTwo.length;
-            sentencesTwo = Arrays.copyOf(sentencesTwo, sentencesOne.length);
-            Arrays.fill(sentencesTwo, originalLength - 1, sentencesTwo.length, "");
-        }
+    public String[] doEqualizeSentences(String[] sentencesOne, String[] sentencesTwo) {
+        int originalLength = sentencesOne.length;
+        sentencesOne = Arrays.copyOf(sentencesOne, sentencesTwo.length);
+        Arrays.fill(sentencesOne, originalLength, sentencesOne.length, "");
+        return sentencesOne;
     }
 
     public Integer[][] buildTriadsMatrix(String[] sentences) {
-        Integer[][] matrix = new Integer[TRIADS.size()][sentences.length];
+        Integer[][] matrix = new Integer[sentences.length][TRIADS.size()];
         for (int i = 0; i < matrix.length; i++) {
             matrix[i] = searchForEntries(TRIADS.get(i), sentences);
         }
