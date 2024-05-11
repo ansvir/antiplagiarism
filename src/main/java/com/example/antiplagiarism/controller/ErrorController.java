@@ -19,6 +19,7 @@ public class ErrorController {
         String errorMessage = (throwable != null ? throwable.getMessage() : "Unknown error");
         model.addAttribute("errorMessage", errorMessage);
         model.addAttribute("statusCode", 500);
+        log.error(throwable.getMessage());
         return AntiplagiarismUtil.buildMav("error", model);
     }
 

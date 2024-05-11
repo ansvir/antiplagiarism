@@ -55,7 +55,7 @@ public class AuthController {
         }
         UserDto userDto = userService.checkUserExists(userAuthDto);
         if (userDto != null) {
-            authService.loginUser(userDto.getUsername(), request.getRequestedSessionId());
+            authService.loginUser(userDto.getUsername(), request.getSession(true).getId());
             model.addAttribute(TEXT_TEST_SUBMIT_ATTRIBUTE_KEY, new TextTestSubmitDto());
             return AntiplagiarismUtil.buildMav(HOME_PAGE_NAME, model);
         }
@@ -76,7 +76,7 @@ public class AuthController {
         }
         UserDto newUser = userService.save(new UserDto(userAuthDto.getUsername(), userAuthDto.getPassword(),
                 USER_ROLE, new ArrayList<>(), true));
-        authService.loginUser(newUser.getUsername(), request.getRequestedSessionId());
+        authService.loginUser(newUser.getUsername(), request.getSession(true).getId());
         model.addAttribute(TEXT_TEST_SUBMIT_ATTRIBUTE_KEY, new TextTestSubmitDto());
         return AntiplagiarismUtil.buildMav(HOME_PAGE_NAME, model);
     }
@@ -84,7 +84,7 @@ public class AuthController {
     @GetMapping("/logout")
     public ModelAndView doLogout(Model model, HttpServletRequest request) {
         try {
-            AuthService.UserSession userSession = authService.getUserSessionBySessionId(request.getRequestedSessionId());
+            AuthService.UserSession userSession = authService.getUserSessionBySessionId(request.getSession().getId());
             authService.logoutUser(userSession.getUsername());
         } catch (EntityNotFoundException e) {
             model.addAttribute(ALERT_ATTRIBUTE_KEY, List.of("Cannot logout! Error occurred!"));

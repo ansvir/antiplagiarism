@@ -89,18 +89,18 @@ public class TextTestService implements IService<TextTestDto, Long> {
     public Integer[][] buildTriadsMatrix(String[] sentences) {
         Integer[][] matrix = new Integer[sentences.length][TRIADS.size()];
         for (int i = 0; i < matrix.length; i++) {
-            matrix[i] = searchForEntries(TRIADS.get(i), sentences);
+            matrix[i] = searchForEntries(TRIADS.toArray(String[]::new), sentences[i]);
         }
         return matrix;
     }
 
-    private Integer[] searchForEntries(String triada, String[] sentences) {
-        Integer[] entries = new Integer[sentences.length];
-        for (int i = 0; i < sentences.length; i++) {
-            String escapedWord = Pattern.quote(triada);
+    private Integer[] searchForEntries(String[] triads, String sentence) {
+        Integer[] entries = new Integer[triads.length];
+        for (int i = 0; i < triads.length; i++) {
+            String escapedWord = Pattern.quote(triads[i]);
             String pattern = ".*" + escapedWord + ".*";
             Pattern wordPattern = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-            Matcher matcher = wordPattern.matcher(sentences[i]);
+            Matcher matcher = wordPattern.matcher(sentence);
             int count = 0;
             while (matcher.find()) {
                 count++;

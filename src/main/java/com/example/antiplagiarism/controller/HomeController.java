@@ -36,7 +36,7 @@ public class HomeController {
     @GetMapping(value = "/" + HOME_PAGE_NAME)
     public ModelAndView getHomePage(Model model, HttpServletRequest request) {
         try {
-            String username = authService.getUserSessionBySessionId(request.getRequestedSessionId()).getUsername();
+            String username = authService.getUserSessionBySessionId(request.getSession().getId()).getUsername();
             if (!authService.isUserLoggedIn(username)) {
                 model.addAttribute(USER_ATTRIBUTE_KEY, new UserAuthDto());
                 return AntiplagiarismUtil.buildMav(LOGIN_PAGE_NAME, model);
@@ -53,7 +53,7 @@ public class HomeController {
     public ModelAndView doTextTest(@Valid @ModelAttribute(TEXT_TEST_SUBMIT_ATTRIBUTE_KEY) TextTestSubmitDto textTestSubmitDto,
                                    BindingResult bindingResult, Model model, HttpServletRequest request) {
         try {
-            String username = authService.getUserSessionBySessionId(request.getRequestedSessionId()).getUsername();
+            String username = authService.getUserSessionBySessionId(request.getSession().getId()).getUsername();
             if (!authService.isUserLoggedIn(username)) {
                 model.addAttribute(USER_ATTRIBUTE_KEY, new UserAuthDto());
                 return AntiplagiarismUtil.buildMav(LOGIN_PAGE_NAME, model);

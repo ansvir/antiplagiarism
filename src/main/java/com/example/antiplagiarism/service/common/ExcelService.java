@@ -93,12 +93,12 @@ public class ExcelService {
         Row header = sheet.createRow(0);
         header.createCell(0).setCellValue("Triada");
         header.createCell(1).setCellValue("Entries");
-        for (int i = 0; i < matrix.length; i++) {
+        for (int i = 0; i < triads.length; i++) {
             Row record = sheet.createRow(i + 1);
             record.createCell(0).setCellValue(triads[i]);
             int sum = 0;
-            for (int j = 0; j < matrix[0].length; j++) {
-                sum += matrix[i][j];
+            for (int j = 0; j < matrix.length; j++) {
+                sum += matrix[j][i];
             }
             record.createCell(1).setCellValue(sum);
         }
