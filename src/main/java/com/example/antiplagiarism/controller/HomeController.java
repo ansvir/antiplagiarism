@@ -58,6 +58,11 @@ public class HomeController {
                 model.addAttribute(USER_ATTRIBUTE_KEY, new UserAuthDto());
                 return AntiplagiarismUtil.buildMav(LOGIN_PAGE_NAME, model);
             }
+            TextTestDto textTestDto = new TextTestDto();
+            textTestDto.setTextOne(textTestSubmitDto.getTextOne());
+            textTestDto.setTextTwo(textTestSubmitDto.getTextTwo());
+            model.addAttribute(TEXT_TEST_ATTRIBUTE_KEY, textTestService.doTextTestAndSaveResult(textTestDto, username));
+            model.addAttribute(TEXT_TEST_SUBMIT_ATTRIBUTE_KEY, textTestSubmitDto);
         } catch (EntityNotFoundException e) {
             model.addAttribute(USER_ATTRIBUTE_KEY, new UserAuthDto());
             return AntiplagiarismUtil.buildMav(LOGIN_PAGE_NAME, model);
@@ -65,11 +70,6 @@ public class HomeController {
         if (bindingResult.hasErrors()) {
             return AntiplagiarismUtil.buildMav(HOME_PAGE_NAME, model);
         }
-        TextTestDto textTestDto = new TextTestDto();
-        textTestDto.setTextOne(textTestSubmitDto.getTextOne());
-        textTestDto.setTextTwo(textTestSubmitDto.getTextTwo());
-        model.addAttribute(TEXT_TEST_ATTRIBUTE_KEY, textTestService.doTextTestAndSaveResult(textTestDto));
-        model.addAttribute(TEXT_TEST_SUBMIT_ATTRIBUTE_KEY, textTestSubmitDto);
         return AntiplagiarismUtil.buildMav(HOME_PAGE_NAME, model);
     }
 

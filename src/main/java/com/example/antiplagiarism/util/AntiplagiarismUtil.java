@@ -9,6 +9,7 @@ public class AntiplagiarismUtil {
 
     public static final String ALERT_ATTRIBUTE_KEY = "alertMessages";
     public static final String TEXT_TEST_SUBMIT_ATTRIBUTE_KEY = "textTestSubmit";
+    public static final String PROFILE_ATTRIBUTE_KEY = "profile";
     public static final String TEXT_TEST_ATTRIBUTE_KEY = "textTest";
     public static final String USER_ATTRIBUTE_KEY = "user";
 

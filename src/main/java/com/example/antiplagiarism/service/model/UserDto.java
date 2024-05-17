@@ -14,7 +14,6 @@ public class UserDto {
     private String username;
     private String password;
     private String role;
-    private List<TextTestDto> textTests;
     private boolean isEnabled;
 
 }

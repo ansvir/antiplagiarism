@@ -51,39 +51,35 @@
     <div class="container-fluid bg-primary mb-5 wow fadeIn" data-wow-delay="0.1s" style="padding: 35px;">
         <div class="container">
             <div class="row g-2">
-                <form th:action="@{/home}" th:object="${textTestSubmit}" method="post">
-                    <div class="col-md-12">
-                        <div class="row g-2">
-                            <div class="mb-3">
-                                <label for="textOne" class="form-label text-white">Enter your text</label>
-                                <textarea th:field="*{textOne}" class="form-control" name="textOne" id="textOne"
-                                          rows="5"></textarea>
-                                <p class="text-danger" th:if="${#fields.hasErrors('textOne')}" th:errors="*{textOne}">This text is
-                                    invalid!</p>
+                <div class="col-md-12">
+                    <div class="row g-2">
+                        <h2 th:text="'Hello, ' + ${profile.userDto.username} + '!'" class="h2 text-white"></h2>
+                    </div>
+                    <div id="accordion">
+                        <div th:each="textTest: ${profile.textTestDtos}" class="card">
+                            <div class="card-header" id="headingOne">
+                                <h5 class="mb-0">
+                                    <button th:id="'collapse-' + ${textTest.id}" th:text="'Result ' + ${textTest.id}" class="btn btn-link" onclick="collapseCard(this)">
+                                    </button>
+                                </h5>
                             </div>
-                            <div class="mb-3">
-                                <label for="textTwo" class="form-label text-white">Enter text to check against</label>
-                                <textarea th:field="*{textTwo}" class="form-control" name="textTwo" id="textTwo"
-                                          rows="5"></textarea>
-                                <p class="text-danger" th:if="${#fields.hasErrors('textTwo')}" th:errors="*{textTwo}">This text is
-                                    invalid!</p>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-4">
-                                    <button type="submit" class="btn btn-dark w-25 border-0">Submit</button>
+                            <div th:id="'text-test-' + ${textTest.id}" class="collapse card"
+                                 aria-labelledby="headingOne" data-parent="#accordion">
+                                <div class="card-body">
+                                    <h5 th:text="'Result: ' + ${#numbers.formatDecimal(textTest.plagiatResult, 2, 2)} + ' %'"
+                                        class="card-title"></h5>
                                 </div>
-                                <div th:if="${textTest != null && textTest.plagiatResult != null}" class="col-md-4">
-                                    <div class="text-white h3"
-                                         th:text="'Result: ' + ${#numbers.formatDecimal(textTest.plagiatResult, 2, 2)} + ' %'">
-                                    </div>
-                                </div>
-                                <div th:if="${textTest != null && textTest.plagiatResult != null}" class="col-md-4">
-                                    <button type="button" onclick="sendReport()" class="btn btn-dark border-0">Report</button>
+                                <ul class="list-group list-group-flush">
+                                    <li th:text="${textTest.textOne}" class="list-group-item"></li>
+                                    <li th:text="${textTest.textTwo}" class="list-group-item"></li>
+                                </ul>
+                                <div class="card-body">
+                                    <a onclick="sendReport(this)" class="btn btn-primary">Report</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     </div>
@@ -115,25 +111,21 @@
 <script th:src="@{/lib/owlcarousel/owl.carousel.min.js}"></script>
 <script th:src="@{/lib/custom.js}"></script>
 <script th:inline="javascript">
-    function sendReport() {
+    function sendReport(event) {
+        var selectedId = $(event).parent().parent().attr('id').split('-')[2]
         var xhr = new XMLHttpRequest();
-        xhr.open("POST", "http://localhost:8080/report", true);
+        xhr.open("POST", `http://localhost:8080/${selectedId}/report`, true);
         xhr.setRequestHeader("Content-Type", "application/json");
         xhr.responseType = 'arraybuffer'
 
-        var reportData = {
-            textOne: $('#textOne').val(),
-            textTwo: $('#textTwo').val()
-        };
-
-        xhr.onreadystatechange = function() {
+        xhr.onreadystatechange = function () {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
                     var data = xhr.response;
-                    var blob = new Blob([data], { type: "application/vnd.ms-excel" });
+                    var blob = new Blob([data], {type: "application/vnd.ms-excel"});
 
                     var reader = new FileReader();
-                    reader.onload = function(event) {
+                    reader.onload = function (event) {
                         var xlsData = event.target.result;
 
                         var link = document.createElement('a');
@@ -152,7 +144,12 @@
             }
         };
 
-        xhr.send(JSON.stringify(reportData));
+        xhr.send();
+    }
+
+    function collapseCard(event) {
+        let collapseId = '#text-test-' + $(event).attr('id').split('-')[1]
+        $(collapseId).collapse('toggle')
     }
 </script>
 </body>

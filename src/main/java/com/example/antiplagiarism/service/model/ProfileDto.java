@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -13,6 +14,6 @@ public class ProfileDto {
 
     private Long id;
     private UserDto userDto;
-    private List<TextTestDto> textTestDtos;
+    private List<TextTestDto> textTestDtos = new ArrayList<>();
 
 }

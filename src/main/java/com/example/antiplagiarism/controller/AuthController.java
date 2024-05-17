@@ -1,7 +1,9 @@
 package com.example.antiplagiarism.controller;
 
 import com.example.antiplagiarism.service.common.AuthService;
+import com.example.antiplagiarism.service.database.ProfileService;
 import com.example.antiplagiarism.service.database.UserService;
+import com.example.antiplagiarism.service.model.ProfileDto;
 import com.example.antiplagiarism.service.model.TextTestSubmitDto;
 import com.example.antiplagiarism.service.model.UserAuthDto;
 import com.example.antiplagiarism.service.model.UserDto;
@@ -34,6 +36,7 @@ public class AuthController {
 
     private final UserService userService;
     private final AuthService authService;
+    private final ProfileService profileService;
 
     @GetMapping(value = {"/", "/" + LOGIN_PAGE_NAME})
     public ModelAndView getLoginPage(Model model) {
@@ -75,7 +78,9 @@ public class AuthController {
             return AntiplagiarismUtil.buildMav(SIGNUP_PAGE_NAME, model);
         }
         UserDto newUser = userService.save(new UserDto(userAuthDto.getUsername(), userAuthDto.getPassword(),
-                USER_ROLE, new ArrayList<>(), true));
+                USER_ROLE, true));
+        ProfileDto profileDto = new ProfileDto(null, newUser, new ArrayList<>());
+        profileService.save(profileDto);
         authService.loginUser(newUser.getUsername(), request.getSession(true).getId());
         model.addAttribute(TEXT_TEST_SUBMIT_ATTRIBUTE_KEY, new TextTestSubmitDto());
         return AntiplagiarismUtil.buildMav(HOME_PAGE_NAME, model);

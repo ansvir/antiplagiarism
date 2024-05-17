@@ -6,7 +6,6 @@ import com.example.antiplagiarism.service.IService;
 import com.example.antiplagiarism.service.model.UserAuthDto;
 import com.example.antiplagiarism.service.model.UserDto;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,7 +13,6 @@ import javax.persistence.EntityNotFoundException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional

@@ -3,19 +3,24 @@ package com.example.antiplagiarism.service.database;
 import com.example.antiplagiarism.mapper.TextTestMapper;
 import com.example.antiplagiarism.repository.db.TextTestRepository;
 import com.example.antiplagiarism.service.IService;
+import com.example.antiplagiarism.service.model.ProfileDto;
 import com.example.antiplagiarism.service.model.TextTestDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
+import org.hibernate.cfg.NotYetImplementedException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -28,13 +33,18 @@ public class TextTestService implements IService<TextTestDto, Long> {
 
     private final TextTestRepository textTestRepository;
     private final TextTestMapper textTestMapper;
+    private final ProfileService profileService;
 
     @Override
     public List<TextTestDto> findAll() {
-        // not yet implemented
-        throw new UnsupportedOperationException("Not implemented yet!");
+        throw new NotYetImplementedException("Not yet implemented!");
     }
 
+    public TextTestDto findById(Long id) {
+        return textTestRepository.findById(id)
+                .map(textTestMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundException("No such text test for id: " + id));
+    }
 
     @Override
     public TextTestDto save(TextTestDto entity) {
@@ -43,8 +53,7 @@ public class TextTestService implements IService<TextTestDto, Long> {
 
     @Override
     public void updateAll(List<TextTestDto> entities) {
-        // not implemented yed
-        throw new UnsupportedOperationException("Method not yet implemented!");
+        throw new NotYetImplementedException("Not yet implemented!");
     }
 
     @Override
@@ -52,9 +61,16 @@ public class TextTestService implements IService<TextTestDto, Long> {
         return textTestRepository.count();
     }
 
-    public TextTestDto doTextTestAndSaveResult(TextTestDto textTestDto) {
+    public TextTestDto doTextTestAndSaveResult(TextTestDto textTestDto, String username) {
         TextTestDto result = doTextTest(textTestDto);
-        return save(result);
+        ProfileDto profileDto = profileService.findByUsername(username);
+        profileDto.getTextTestDtos().add(result);
+        ProfileDto saved = profileService.save(profileDto);
+        List<TextTestDto> foundSorted = saved.getTextTestDtos()
+                .stream()
+                .sorted(Comparator.naturalOrder())
+                .collect(Collectors.toList());
+        return foundSorted.get(foundSorted.size() - 1);
     }
 
     private TextTestDto doTextTest(TextTestDto textTestDto) {
