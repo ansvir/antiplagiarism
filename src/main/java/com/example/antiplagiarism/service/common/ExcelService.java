@@ -4,7 +4,6 @@ import com.example.antiplagiarism.service.database.TextTestService;
 import com.example.antiplagiarism.service.model.TextTestSubmitDto;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -14,6 +13,9 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.example.antiplagiarism.service.database.TextTestService.TRIADS;
 
@@ -25,16 +27,20 @@ public class ExcelService {
 
     public byte[] createTextTestReport(TextTestSubmitDto textTestSubmitDto) {
         HSSFWorkbook workbook = new HSSFWorkbook();
-        String[] sentencesOne = textTestService.doSentenceSplit(textTestSubmitDto.getTextOne());
-        String[] sentencesTwo = textTestService.doSentenceSplit(textTestSubmitDto.getTextTwo());
+        String[] sentencesOne = textTestService.doTokenization(textTestSubmitDto.getTextOne());
+        String[] sentencesTwo = textTestService.doTokenization(textTestSubmitDto.getTextTwo());
         if (sentencesOne.length > sentencesTwo.length) {
             sentencesTwo = textTestService.doEqualizeSentences(sentencesTwo, sentencesOne);
         } else if (sentencesOne.length < sentencesTwo.length) {
             sentencesOne = textTestService.doEqualizeSentences(sentencesOne, sentencesTwo);
         }
-        final Integer[][] matrixFirst = textTestService.buildTriadsMatrix(sentencesOne);
-        final Integer[][] matrixSecond = textTestService.buildTriadsMatrix(sentencesTwo);
-        String[] triads = TRIADS.toArray(String[]::new);
+        String[] fragmentsOne = textTestService.doSplitToFragments(textTestSubmitDto.getTextOne(), sentencesOne.length);
+        String[] fragmentsTwo = textTestService.doSplitToFragments(textTestSubmitDto.getTextTwo(), sentencesTwo.length);
+        String[] triadsOne = textTestService.extractPopularTriads(fragmentsOne);
+        String[] triadsTwo = textTestService.extractPopularTriads(fragmentsTwo);
+        String[] triads = textTestService.findCommonTriads(triadsOne, triadsTwo);
+        final Integer[][] matrixFirst = textTestService.buildTriadsMatrix(sentencesOne, triads);
+        final Integer[][] matrixSecond = textTestService.buildTriadsMatrix(sentencesTwo, triads);
         addTriadsMatrix("TextOne", workbook, triads, matrixFirst);
         addTriadsMatrix("TextTwo", workbook, triads, matrixSecond);
         final double[][] correlationMatrixFirst = textTestService.buildCorrelationMatrix(matrixFirst);

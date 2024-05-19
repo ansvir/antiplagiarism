@@ -12,12 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.lang.reflect.Array;
 import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -29,6 +25,7 @@ public class TextTestService implements IService<TextTestDto, Long> {
 
     public static final List<String> TRIADS = List.of("раз", "про", "кур", "кот",
             "сиг", "одн", "воз", "рак", "сис", "вре");
+    private static final int MAX_TRIADS = 10;
     private static final String SENTENCE_SPLIT_PATTERN = "[.!?]\\s+";
 
     private final TextTestRepository textTestRepository;
@@ -74,15 +71,20 @@ public class TextTestService implements IService<TextTestDto, Long> {
     }
 
     private TextTestDto doTextTest(TextTestDto textTestDto) {
-        String[] sentencesOne = doSentenceSplit(textTestDto.getTextOne());
-        String[] sentencesTwo = doSentenceSplit(textTestDto.getTextTwo());
+        String[] sentencesOne = doTokenization(textTestDto.getTextOne());
+        String[] sentencesTwo = doTokenization(textTestDto.getTextTwo());
         if (sentencesOne.length > sentencesTwo.length) {
             sentencesTwo = doEqualizeSentences(sentencesTwo, sentencesOne);
         } else if (sentencesOne.length < sentencesTwo.length) {
             sentencesOne = doEqualizeSentences(sentencesOne, sentencesTwo);
         }
-        final Integer[][] matrixFirst = buildTriadsMatrix(sentencesOne);
-        final Integer[][] matrixSecond = buildTriadsMatrix(sentencesTwo);
+        String[] fragmentsOne = doSplitToFragments(textTestDto.getTextOne(), sentencesOne.length);
+        String[] fragmentsTwo = doSplitToFragments(textTestDto.getTextTwo(), sentencesTwo.length);
+        String[] triadsOne = extractPopularTriads(fragmentsOne);
+        String[] triadsTwo = extractPopularTriads(fragmentsTwo);
+        String[] triads = findCommonTriads(triadsOne, triadsTwo);
+        final Integer[][] matrixFirst = buildTriadsMatrix(sentencesOne, triads);
+        final Integer[][] matrixSecond = buildTriadsMatrix(sentencesTwo, triads);
         final double[][] correlationMatrixFirst = buildCorrelationMatrix(matrixFirst);
         final double[][] correlationMatrixSecond = buildCorrelationMatrix(matrixSecond);
         final BigDecimal equality = BigDecimal.valueOf(calculateEquality(correlationMatrixFirst, correlationMatrixSecond) * 100.0);
@@ -90,7 +92,7 @@ public class TextTestService implements IService<TextTestDto, Long> {
         return textTestDto;
     }
 
-    public String[] doSentenceSplit(String text) {
+    public String[] doTokenization(String text) {
         return text.toLowerCase(Locale.forLanguageTag("ru"))
                 .trim().split(SENTENCE_SPLIT_PATTERN);
     }
@@ -102,10 +104,88 @@ public class TextTestService implements IService<TextTestDto, Long> {
         return sentencesOne;
     }
 
-    public Integer[][] buildTriadsMatrix(String[] sentences) {
-        Integer[][] matrix = new Integer[sentences.length][TRIADS.size()];
+    public String[] doSplitToFragments(String text, int sentencesCount) {
+        List<String> fragments = new ArrayList<>();
+
+        double n = 1 + 3.322 * Math.log(sentencesCount);
+        int fragmentCount = (int) Math.ceil(n);
+
+        int textLength = text.length();
+        int fragmentLength = textLength / fragmentCount;
+        int start = 0;
+
+        for (int i = 0; i < fragmentCount; i++) {
+            int end = start + fragmentLength;
+            if (i == fragmentCount - 1) {
+                end = textLength;
+            }
+            fragments.add(text.substring(start, end));
+            start = end;
+        }
+
+        return fragments.toArray(String[]::new);
+    }
+
+    public String[] extractPopularTriads(String[] sentences) {
+        Map<String, Integer> triadCounts = new HashMap<>();
+
+        for (String sentence : sentences) {
+            String[] words = sentence.split("[,;:\\s]+");
+            words = Arrays.stream(words)
+                    .map(String::toLowerCase)
+                    .filter(word -> word.matches("\\p{L}+") && word.length() >= 3)
+                    .toArray(String[]::new);
+            for (int i = 0; i < words.length; i++) {
+                for (int j = 3; j < words[i].length(); j++) {
+                    String maybeTriada = words[i].substring(j - 3, j);
+                    if (!(maybeTriada.startsWith("ь") || maybeTriada.startsWith("ъ"))) {
+                        if (!triadCounts.containsKey(maybeTriada)) {
+                            triadCounts.put(maybeTriada, 1);
+                        } else if (triadCounts.containsKey(maybeTriada)) {
+                            triadCounts.put(maybeTriada, triadCounts.get(maybeTriada) + 1);
+                        }
+                    }
+                }
+            }
+        }
+
+        return triadCounts.keySet()
+                .toArray(String[]::new);
+    }
+
+    public String[] findCommonTriads(String[] triadsOne, String[] triadsTwo) {
+        Map<String, Integer> triadCounts = new HashMap<>();
+
+        for (String triadaOne : triadsOne) {
+            if (!triadCounts.containsKey(triadaOne)) {
+                triadCounts.put(triadaOne, 1);
+            } else if (triadCounts.containsKey(triadaOne)) {
+                triadCounts.put(triadaOne, triadCounts.get(triadaOne) + 1);
+            }
+        }
+
+        for (String triadaTwo : triadsTwo) {
+            if (!triadCounts.containsKey(triadaTwo)) {
+                triadCounts.put(triadaTwo, 1);
+            } else if (triadCounts.containsKey(triadaTwo)) {
+                triadCounts.put(triadaTwo, triadCounts.get(triadaTwo) + 1);
+            }
+        }
+
+        List<Map.Entry<String, Integer>> sortedTriads = triadCounts.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .collect(Collectors.toList());
+
+        return sortedTriads.stream()
+                .limit(MAX_TRIADS)
+                .map(Map.Entry::getKey)
+                .toArray(String[]::new);
+    }
+
+    public Integer[][] buildTriadsMatrix(String[] sentences, String[] triads) {
+        Integer[][] matrix = new Integer[sentences.length][triads.length];
         for (int i = 0; i < matrix.length; i++) {
-            matrix[i] = searchForEntries(TRIADS.toArray(String[]::new), sentences[i]);
+            matrix[i] = searchForEntries(triads, sentences[i]);
         }
         return matrix;
     }
