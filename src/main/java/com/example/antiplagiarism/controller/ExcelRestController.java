@@ -26,7 +26,7 @@ public class ExcelRestController {
 
     @PostMapping("/report")
     public ResponseEntity<byte[]> doDownloadReport(@RequestBody TextTestSubmitDto textTestSubmitDto) {
-        return buildReportResponse(textTestSubmitDto);
+        return buildReportResponse(null, textTestSubmitDto);
     }
 
     @PostMapping("/{id}/report")
@@ -34,11 +34,11 @@ public class ExcelRestController {
         TextTestDto textTestDto = textTestService.findById(id);
         TextTestSubmitDto textTestSubmitDto = new TextTestSubmitDto(textTestDto.getTextOne(),
                 textTestDto.getTextTwo());
-        return buildReportResponse(textTestSubmitDto);
+        return buildReportResponse(textTestDto.getId(), textTestSubmitDto);
     }
 
-    private ResponseEntity<byte[]> buildReportResponse(TextTestSubmitDto textTestSubmitDto) {
-        ByteArrayResource resource = new ByteArrayResource(excelService.createTextTestReport(textTestSubmitDto));
+    private ResponseEntity<byte[]> buildReportResponse(Long id, TextTestSubmitDto textTestSubmitDto) {
+        ByteArrayResource resource = new ByteArrayResource(excelService.createTextTestReport(id, textTestSubmitDto));
         HttpHeaders headers = new HttpHeaders();
         headers.set(CONTENT_TYPE, "application/vnd.ms-excel");
         headers.setContentDispositionFormData("attachment", "report.xls");

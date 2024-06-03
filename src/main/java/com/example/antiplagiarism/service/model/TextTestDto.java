@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -15,6 +16,7 @@ public class TextTestDto implements Comparable<TextTestDto> {
     private String textOne;
     private String textTwo;
     private BigDecimal plagiatResult;
+    private List<TriadaDto> triads;
 
     @Override
     public int compareTo(TextTestDto o) {
@@ -23,4 +25,5 @@ public class TextTestDto implements Comparable<TextTestDto> {
         }
         return this.id.compareTo(o.id);
     }
+
 }

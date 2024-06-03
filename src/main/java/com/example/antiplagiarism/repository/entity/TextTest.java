@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -28,5 +29,9 @@ public class TextTest {
 
     @Column(nullable = false)
     private BigDecimal plagiatResult;
+
+    @OneToMany(cascade = CascadeType.ALL)
+    @JoinColumn(name = "text_test_id")
+    private List<Triada> triads;
 
 }

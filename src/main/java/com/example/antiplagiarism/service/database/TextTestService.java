@@ -5,6 +5,7 @@ import com.example.antiplagiarism.repository.db.TextTestRepository;
 import com.example.antiplagiarism.service.IService;
 import com.example.antiplagiarism.service.model.ProfileDto;
 import com.example.antiplagiarism.service.model.TextTestDto;
+import com.example.antiplagiarism.service.model.TriadaDto;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.stat.correlation.PearsonsCorrelation;
 import org.hibernate.cfg.NotYetImplementedException;
@@ -23,8 +24,6 @@ import java.util.stream.Collectors;
 @Transactional
 public class TextTestService implements IService<TextTestDto, Long> {
 
-    public static final List<String> TRIADS = List.of("раз", "про", "кур", "кот",
-            "сиг", "одн", "воз", "рак", "сис", "вре");
     private static final int MAX_TRIADS = 10;
     private static final String SENTENCE_SPLIT_PATTERN = "[.!?]\\s+";
 
@@ -83,6 +82,11 @@ public class TextTestService implements IService<TextTestDto, Long> {
         String[] triadsOne = extractPopularTriads(fragmentsOne);
         String[] triadsTwo = extractPopularTriads(fragmentsTwo);
         String[] triads = findCommonTriads(triadsOne, triadsTwo);
+        textTestDto.setTriads(Arrays.stream(triads).map(triada -> {
+            TriadaDto triadaDto = new TriadaDto();
+            triadaDto.setValue(triada);
+            return triadaDto;
+        }).collect(Collectors.toList()));
         final Integer[][] matrixFirst = buildTriadsMatrix(sentencesOne, triads);
         final Integer[][] matrixSecond = buildTriadsMatrix(sentencesTwo, triads);
         final double[][] correlationMatrixFirst = buildCorrelationMatrix(matrixFirst);

@@ -2,6 +2,7 @@ package com.example.antiplagiarism.service.common;
 
 import com.example.antiplagiarism.service.database.TextTestService;
 import com.example.antiplagiarism.service.model.TextTestSubmitDto;
+import com.example.antiplagiarism.service.model.TriadaDto;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -13,11 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import static com.example.antiplagiarism.service.database.TextTestService.TRIADS;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +21,7 @@ public class ExcelService {
 
     private final TextTestService textTestService;
 
-    public byte[] createTextTestReport(TextTestSubmitDto textTestSubmitDto) {
+    public byte[] createTextTestReport(Long id, TextTestSubmitDto textTestSubmitDto) {
         HSSFWorkbook workbook = new HSSFWorkbook();
         String[] sentencesOne = textTestService.doTokenization(textTestSubmitDto.getTextOne());
         String[] sentencesTwo = textTestService.doTokenization(textTestSubmitDto.getTextTwo());
@@ -34,11 +30,20 @@ public class ExcelService {
         } else if (sentencesOne.length < sentencesTwo.length) {
             sentencesOne = textTestService.doEqualizeSentences(sentencesOne, sentencesTwo);
         }
-        String[] fragmentsOne = textTestService.doSplitToFragments(textTestSubmitDto.getTextOne(), sentencesOne.length);
-        String[] fragmentsTwo = textTestService.doSplitToFragments(textTestSubmitDto.getTextTwo(), sentencesTwo.length);
-        String[] triadsOne = textTestService.extractPopularTriads(fragmentsOne);
-        String[] triadsTwo = textTestService.extractPopularTriads(fragmentsTwo);
-        String[] triads = textTestService.findCommonTriads(triadsOne, triadsTwo);
+        String[] triads;
+        if (id == null) {
+            String[] fragmentsOne = textTestService.doSplitToFragments(textTestSubmitDto.getTextOne(), sentencesOne.length);
+            String[] fragmentsTwo = textTestService.doSplitToFragments(textTestSubmitDto.getTextTwo(), sentencesTwo.length);
+            String[] triadsOne = textTestService.extractPopularTriads(fragmentsOne);
+            String[] triadsTwo = textTestService.extractPopularTriads(fragmentsTwo);
+            triads = textTestService.findCommonTriads(triadsOne, triadsTwo);
+        } else {
+            triads = textTestService.findById(id)
+                    .getTriads()
+                    .stream()
+                    .map(TriadaDto::getValue)
+                    .toArray(String[]::new);
+        }
         final Integer[][] matrixFirst = textTestService.buildTriadsMatrix(sentencesOne, triads);
         final Integer[][] matrixSecond = textTestService.buildTriadsMatrix(sentencesTwo, triads);
         addTriadsMatrix("TextOne", workbook, triads, matrixFirst);

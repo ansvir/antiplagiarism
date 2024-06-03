@@ -72,9 +72,10 @@
                                 <ul class="list-group list-group-flush">
                                     <li th:text="${textTest.textOne}" class="list-group-item"></li>
                                     <li th:text="${textTest.textTwo}" class="list-group-item"></li>
+                                    <li th:text="'Triads: ' + ${#strings.listJoin(textTest.triads.![value], ', ')}" class="list-group-item"></li>
                                 </ul>
                                 <div class="card-body">
-                                    <a onclick="sendReport(this)" class="btn btn-primary">Report</a>
+                                    <a onclick="sendReport(this)" class="btn btn-dark">Report</a>
                                 </div>
                             </div>
                         </div>
